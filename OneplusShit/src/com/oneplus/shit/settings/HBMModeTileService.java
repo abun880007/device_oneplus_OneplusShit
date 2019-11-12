@@ -20,6 +20,7 @@ package com.oneplus.shit.settings;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import com.oneplus.shit.settings.utils.FileUtils;
 import com.oneplus.shit.settings.HBMModeSwitch;
@@ -27,6 +28,7 @@ import android.preference.PreferenceManager;
 
 @TargetApi(24)
 public class HBMModeTileService extends TileService {
+    private boolean enabled = false;
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -45,6 +47,10 @@ public class HBMModeTileService extends TileService {
     @Override
     public void onStartListening() {
         super.onStartListening();
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        enabled = HBMModeSwitch.isCurrentlyEnabled(this);
+        getQsTile().setState(enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
+        getQsTile().updateTile();
     }
 
     @Override
@@ -56,9 +62,11 @@ public class HBMModeTileService extends TileService {
     public void onClick() {
         super.onClick();
 	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        final boolean enabled = HBMModeSwitch.isCurrentlyEnabled(this);
+        enabled = HBMModeSwitch.isCurrentlyEnabled(this);
         FileUtils.writeValue(HBMModeSwitch.getFile(), enabled ? "0" : "2");
         sharedPrefs.edit().putBoolean(ShitPanelSettings.KEY_HBM_SWITCH, enabled ? false : true).commit();
+        //getQsTile().setLabel(enabled ? "HBM off" : "HBM On");
+        getQsTile().setState(enabled ? Tile.STATE_INACTIVE : Tile.STATE_ACTIVE);
+        getQsTile().updateTile();
     }
 }
-
