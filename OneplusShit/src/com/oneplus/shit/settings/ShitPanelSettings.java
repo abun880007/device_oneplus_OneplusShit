@@ -21,6 +21,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.res.Resources;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -56,6 +58,7 @@ import android.graphics.drawable.ColorDrawable;
     public static final String KEY_NIGHT_SWITCH = "night";
     public static final String KEY_ONEPLUS_SWITCH = "oneplus";
     
+    private SharedPreferences mPrefs;
     private VibratorStrengthPreference mVibratorStrength;
     private TwoStatePreference mHBMModeSwitch;
     private TwoStatePreference mDCDimSwitch;
@@ -63,6 +66,10 @@ import android.graphics.drawable.ColorDrawable;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         addPreferencesFromResource(R.xml.shit_panel);
 
         ListView lv = getListView();
@@ -82,5 +89,16 @@ import android.graphics.drawable.ColorDrawable;
 
         mDCDimSwitch = (TwoStatePreference) findPreference(KEY_DCDIM_SWITCH);
         mDCDimSwitch.setOnPreferenceChangeListener(new DCDimSwitch());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
